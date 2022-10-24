@@ -25,14 +25,23 @@ app.get("/viewpatients", (req, res)=>{
 
 app.post("/addreport", (req, res) => {
     const record = req.body;
-    console.log(record)
-    Patient.findOne({patientid: record.patientid },(err,data)=>{
+    // console.log(record)
+    Patient.findOne({patientid: record.patientid },(err,dataparent)=>{
         
-        var id = Math.floor(Math.random() * 1000000)
-        Record.create({_id: id, patientid: data.patientid, name: data.name, age: data.age, disease: record.disease},(err,data)=>{
-            if(err) throw err
-            res.redirect('/viewpatients')
+        var id
+        Record.find({}).sort({_id:-1}).limit(1).exec((err, data)=>{
+            console.log(data[0])
+            if(data[0] !== undefined){
+                id = data[0]._id+1;
+            }else{
+                id = 1;
+            }
+            Record.create({_id: id, patientid: dataparent.patientid, name: dataparent.name, age: dataparent.age, disease: record.disease},(err,data)=>{
+                if(err) throw err
+                res.redirect('/viewpatients')
+            })
         })
+        
     })
 
 })
